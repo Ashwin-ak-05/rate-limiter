@@ -13,7 +13,7 @@ public class TestController {
 
 
 
-    @RateLimit(strategy = "TOKEN_BUCKET", api = "test-api")
+    @RateLimit(strategy = "FIXED_WINDOW", api = "test-api")
     @GetMapping("/test")
     public String test(@RequestHeader(value = "X-USER-ID", required = false) String userId){
         return "Request successful";
