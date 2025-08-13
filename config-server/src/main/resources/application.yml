@@ -1,0 +1,28 @@
+spring:
+  application:
+    name: "configserver"
+
+  profiles:
+    active: git
+  #    active: native
+  cloud:
+    config:
+      server:
+        git:
+          uri: "https://github.com/Ashwin-ak-05/rate-limiter-config.git"
+          default-label: main
+          timeout: 5
+          clone-on-start: true
+          force-pull: true
+#        native:
+#          search-locations: "classpath:/config"
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+
+
+
+server:
+  port: 8090

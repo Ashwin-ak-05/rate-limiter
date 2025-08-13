@@ -1,0 +1,11 @@
+ratelimiter:
+  global:
+    limit: 200
+    duration: 1
+    keyType: USER
+
+  apis:
+    test-api:
+      keyType: USER
+      limit: 1
+      duration: 10
