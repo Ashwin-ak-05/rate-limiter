@@ -5,6 +5,10 @@ ratelimiter:
     keyType: USER
 
   apis:
+    global-api:
+      keyType: USER
+      limit: 1
+      duration: 10
     test-api:
       keyType: USER
       limit: 1

@@ -1,11 +1,13 @@
 package org.library.ratelimiter.strategy;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
 import java.time.Duration;
 
+@Slf4j
 @Component("TOKEN_BUCKET")
 public class TokenBucketStrategy implements RateLimitStrategy{
 
@@ -34,11 +36,14 @@ public class TokenBucketStrategy implements RateLimitStrategy{
         double deltaMillis = Math.max(0, now - lastRefreshed);
         tokens = Math.min(limit, tokens + deltaMillis * ratePerMillis);
 
-        if (tokens < 1) {
-            return false;
-        }
+//        if (tokens < 1) {
+//            return false;
+//        }
+//
+//        tokens -= 1;
+        boolean allowed = tokens >= 1;
+        tokens = allowed ? tokens - 1 : tokens;
 
-        tokens -= 1;
 
         redisTemplate.opsForValue().set(tokensKey, String.valueOf(tokens));
         redisTemplate.opsForValue().set(timestampKey, String.valueOf(now));
@@ -46,7 +51,8 @@ public class TokenBucketStrategy implements RateLimitStrategy{
         redisTemplate.expire(tokensKey, duration.toMillis() * 2, java.util.concurrent.TimeUnit.MILLISECONDS);
         redisTemplate.expire(timestampKey, duration.toMillis() * 2, java.util.concurrent.TimeUnit.MILLISECONDS);
 
-        return true;
+        log.debug("TokenBucket | Key: {} | Tokens: {} | Allowed: {}", keyBase, tokens, allowed);
+        return allowed;
 
 
 

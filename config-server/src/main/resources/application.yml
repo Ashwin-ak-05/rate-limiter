@@ -4,7 +4,7 @@ spring:
 
   profiles:
     active: git
-  #    active: native
+#    active: native
   cloud:
     config:
       server:
@@ -16,6 +16,12 @@ spring:
           force-pull: true
 #        native:
 #          search-locations: "classpath:/config"
+
+
+
+
+
+
   rabbitmq:
     host: localhost
     port: 5672

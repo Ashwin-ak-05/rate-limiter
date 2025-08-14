@@ -2,18 +2,18 @@ server:
   port: 8080
 
 
-#spring:
-#
-#  application:
-#    name: "testserver"
-#  profiles:
-#    active: "prod"
-#  config:
-#    import: "configserver:http://localhost:8090/"
-#  data:
-#    redis:
-#      host: localhost
-#      port: 6379
+spring:
+
+  application:
+    name: "testserver"
+  profiles:
+    active: "prod"
+  config:
+    import: "configserver:http://localhost:8090/"
+  data:
+    redis:
+      host: localhost
+      port: 6379
 
 #  rabbitmq:
 #    host: localhost
@@ -21,37 +21,64 @@ server:
 #    username: guest
 #    password: guest
 
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
 
 
 
-spring:
-  application:
-    name: "testserver"
-  data:
-    redis:
-      host: localhost
-      port: 6379
 
-ratelimiter:
-  global:
-    limit: 200
-    duration: 1m
-    keyType: USER
+#spring:
+#  application:
+#    name: "testserver"
+#  data:
+#    redis:
+#      host: localhost
+#      port: 6379
+#
+#ratelimiter:
+#  global:
+#    limit: 200
+#    duration: 1m
+#    keyType: USER
+#
+#  apis:
+#    global-api:
+#      strategy: TOKEN_BUCKET
+#      keyType: USER
+#      limit: 1
+#      duration: 10
+#    test-api:
+#      strategy: FIXED_WINDOW
+#      keyType: USER
+#      limit: 1
+#      duration: 10
+#
 
-  apis:
-    test-api:
-      keyType: USER
-      limit: 0
-      duration: 10
+#  metrics:
+#    tags:
+#      application: ${spring.application.name}
+#  endpoint:
+#    prometheus:
+#      enabled: true
+#
+#
+#
+#resilience4j.circuitbreaker:
+#  instances:
+#    redisCB:
+#      registerHealthIndicator: true
+#      slidingWindowSize: 5
+#      minimumNumberOfCalls: 3
+#      failureRateThreshold: 50
+#      waitDurationInOpenState: 10s
+
+
 
 management:
   endpoints:
     web:
       exposure:
         include: "*"
-  metrics:
-    tags:
-      application: ${spring.application.name}
-  endpoint:
-    prometheus:
-      enabled: true

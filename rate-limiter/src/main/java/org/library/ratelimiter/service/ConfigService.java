@@ -1,18 +1,18 @@
 package org.library.ratelimiter.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.cloud.context.config.annotation.RefreshScope;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
-//@RefreshScope
+@RefreshScope
 @Component
 public class ConfigService {
     @Autowired
     private Environment environment;
 
     public int getApiLimit(String api) {
-        return Integer.parseInt(environment.getProperty("ratelimiter.apis." + api + ".limit","5"));
+        return Integer.parseInt(environment.getProperty("ratelimiter.apis." + api + ".limit","3"));
     }
 
     public int getApiDuration(String api) {
@@ -21,6 +21,10 @@ public class ConfigService {
     }
 
     public String getApiKeyType(String api) {
-        return environment.getProperty("ratelimiter.apis." + api + ".keyType","user123");
+        return environment.getProperty("ratelimiter.apis." + api + ".keyType","/testapi");
+    }
+
+    public String getStrategy(String api){
+        return environment.getProperty("ratelimiter.apis." + api + ".strategy","/testapi");
     }
 }

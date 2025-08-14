@@ -16,12 +16,12 @@ public class RateLimitService {
 
     // Map keyType to limit values (hardcoded or configurable)
     private static final Map<String, Integer> LIMITS = Map.of(
-            "USER", 2,
+            "USER", 3,
             "IP", 50,
             "CLIENT", 5
     );
 
-    private static Duration DURATION = Duration.ofSeconds(20);
+    private static Duration DURATION = Duration.ofSeconds(10);
   //  private final Environment env;
 
     @Autowired

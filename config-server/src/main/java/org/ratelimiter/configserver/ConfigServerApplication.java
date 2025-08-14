@@ -2,6 +2,8 @@ package org.ratelimiter.configserver;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.bus.BusAutoConfiguration;
+import org.springframework.cloud.bus.BusRefreshAutoConfiguration;
 import org.springframework.cloud.config.server.EnableConfigServer;
 
 @SpringBootApplication

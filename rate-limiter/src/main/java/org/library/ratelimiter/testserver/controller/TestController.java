@@ -8,12 +8,14 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
 //@RefreshScope
+@RateLimit(api = "global-api")
 @RestController
+
 public class TestController {
 
 
 
-    @RateLimit(strategy = "FIXED_WINDOW", api = "test-api")
+    @RateLimit(api = "test-api")
     @GetMapping("/test")
     public String test(@RequestHeader(value = "X-USER-ID", required = false) String userId){
         return "Request successful";
@@ -21,10 +23,5 @@ public class TestController {
 
 
 
-//    @Value("${ratelimiter}")
-//    private String message;
-//    @GetMapping("/message")
-//    public String getMessage() {
-//        return message;
-//    }
+
 }

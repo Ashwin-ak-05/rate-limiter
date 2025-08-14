@@ -6,6 +6,7 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.library.ratelimiter.annotation.RateLimit;
+import org.library.ratelimiter.events.KafkaProducer;
 import org.library.ratelimiter.exceptions.RateLimitExceededException;
 import org.library.ratelimiter.observability.RateLimiterMetrics;
 import org.library.ratelimiter.service.ConfigService;
@@ -29,19 +30,28 @@ public class RateLimiterAspect {
     @Autowired
     private RateLimiterMetrics metrics;
 
+    @Autowired
+    private KafkaProducer kafkaProducer;
+
     public RateLimiterAspect(RateLimitService rateLimiterService, HttpServletRequest request, Environment environment) {
         this.rateLimiterService = rateLimiterService;
         this.request = request;
        // this.env = environment;
     }
 
-    @Around("@annotation(rateLimit)")
+    @Around("@within(rateLimit) || @annotation(rateLimit)")
     public Object RateLimitCheck(ProceedingJoinPoint joinPoint, RateLimit rateLimit) throws Throwable {
         metrics.incrementTotal();
-        String strategy = rateLimit.strategy();
+
+
+        if (rateLimit == null) {
+            rateLimit = joinPoint.getTarget().getClass().getAnnotation(RateLimit.class);
+        }
+
         String apiKey = rateLimit.api();
         // String keyType = rateLimit.keyType();
         String keyType = configService.getApiKeyType(apiKey);
+        String strategy = configService.getStrategy(apiKey);
 
         String requestIP = request.getRemoteUser();
         String requestClient = request.getHeader("X-CLIENT-ID");
@@ -73,10 +83,14 @@ public class RateLimiterAspect {
         boolean allowed = rateLimiterService.isAllowed(strategy, identifier, apiPath, apiKey);
         if (!allowed) {
             metrics.incrementThrottled();
-            log.warn("Throttled request: api={}, userId={}, ip={}, strategy={}", apiKey, requestUser, requestIP, strategy);
+            String logMessage = String.format("API=%s, User=%s, IP=%s, Strategy=%s, Timestamp=%d",
+                    apiKey, requestUser, requestIP, strategy, System.currentTimeMillis());
+            kafkaProducer.sendThrottleLog(logMessage);
+            log.warn("Request throttled | API: {} | User: {} | IP: {} | Strategy: {} | Path: {}", apiKey, requestUser, requestIP, strategy, apiPath);
             throw new RateLimitExceededException("Too many requests - rate limit exceeded");
         }
         metrics.incrementAllowed();
+        log.info("Request allowed | API: {} | User: {} | IP: {} | Strategy: {} | Path: {}", apiKey, requestUser, requestIP, strategy, apiPath);
 
         return joinPoint.proceed();
     }
