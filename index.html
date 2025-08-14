@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple HTTP Request Tool</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        #url { width: 400px; }
+        label {
+            display: block;
+            margin-top: 10px;
+            margin-bottom: 5px;
+        }
+        
+        input {
+            display: block;
+            margin-bottom: 10px;
+        }
+        
+        button {
+            display: block;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        
+        <!-- <div class="counter">
+            <span class="pass">Pass: <span id="passCount">0</span></span> | 
+            <span class="fail">Fail: <span id="failCount">0</span></span>
+        </div> -->
+
+        <label>Number of Requests:</label>
+        <input type="number" id="requestCount" value="1" min="1" max="10">
+
+        <label>URL:</label>
+        <input type="text" id="url" value="http://localhost:8080/test">
+
+        <label>Header Key 1:</label>
+        <input type="text" id="headerKey1" value="X-USER-ID">
+
+        <label>Header Key 2:</label>
+        <input type="text" id="headerKey2" value="X-CLIENT-ID">
+
+        <label>Header Key 3:</label>
+        <input type="text" id="headerKey3" value="X-IP">
+
+        <button onclick="sendRequests()">Send Requests</button>
+
+        <div id="results" class="results" style="display: none;"></div>
+    </div>
+
+    <script>
+        
+        let passCount = 0;
+        let failCount = 0;
+
+        
+         function updateCounters() {
+        //     document.getElementById('passCount').textContent = passCount;
+        //     document.getElementById('failCount').textContent = failCount;
+         }
+
+        
+        function sendRequests() {
+            
+            const numRequests = document.getElementById('requestCount').value;
+            const url = document.getElementById('url').value;
+            
+           
+            document.getElementById('results').innerHTML = '';
+            passCount = 0;
+            failCount = 0;
+            updateCounters();
+
+            
+            for (let i = 1; i <= numRequests; i++) {
+                sendOneRequest(url, i);
+            }
+        }
+
+        
+        function sendOneRequest(url, requestNumber) {
+            
+            const headerKey1 = document.getElementById('headerKey1').value;
+            const headerKey2 = document.getElementById('headerKey2').value;
+            const headerKey3 = document.getElementById('headerKey3').value;
+            
+            
+            const headers = {};
+            if (headerKey1) headers[headerKey1] = 'value1';
+            if (headerKey2) headers[headerKey2] = 'value2';
+            if (headerKey3) headers[headerKey3] = 'value3';
+            
+            fetch(url, { method: 'GET', headers: headers })
+                    .then(response => response.text())  
+                    .then(data => {
+                        passCount++;
+                        updateCounters();
+                        console.log('Data received:', data)
+                    })
+                    .catch(error => {
+                        
+                        failCount++;
+                        updateCounters();
+                        console.error('Error:', "Limited Exceeded")
+                    })
+        }
+    </script>
+</body>
+</html>
+
