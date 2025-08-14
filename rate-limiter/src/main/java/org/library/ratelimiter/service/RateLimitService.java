@@ -22,26 +22,28 @@ public class RateLimitService {
     );
 
     private static Duration DURATION = Duration.ofSeconds(10);
-  //  private final Environment env;
+    //  private final Environment env;
 
     @Autowired
     private ConfigService configService;
 
     @Autowired
-    public RateLimitService(Map<String, RateLimitStrategy> strategies, Environment environment){
+    public RateLimitService(Map<String, RateLimitStrategy> strategies, Environment environment) {
         this.strategies = strategies;
-       // this.strategies.put("TOKEN_BUCKET", )
-       // this.env = environment;
+        // this.strategies.put("TOKEN_BUCKET", )
+        // this.env = environment;
     }
 
-    public boolean isAllowed(String strategyName, String identifier, String apiPath, String apiKey){
+    public boolean isAllowed(String strategyName, String identifier, String apiPath, String apiKey) {
         String keyType = configService.getApiKeyType(apiKey);
         int duration_in_sec = configService.getApiDuration(apiKey);
         DURATION = Duration.ofSeconds(duration_in_sec);
         RateLimitStrategy strategy = this.strategies.get(strategyName);
         int limit = configService.getApiLimit(apiKey);
-        String redisKey = RedisKeyUtil.buildKey(keyType,identifier,apiPath);
-        return strategy.allowRequest(redisKey,limit,DURATION);
+        String redisKey = RedisKeyUtil.buildKey(keyType, identifier, apiPath);
+        int burstLimit = configService.getBurstLimit(apiKey);
+
+        return strategy.allowRequest(redisKey, limit, burstLimit, DURATION);
 
     }
 }

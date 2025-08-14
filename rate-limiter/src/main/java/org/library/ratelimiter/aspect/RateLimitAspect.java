@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Aspect
 @Component
-public class RateLimiterAspect {
+public class RateLimitAspect {
 
     private final RateLimitService rateLimiterService;
     private final HttpServletRequest request;
@@ -33,7 +33,7 @@ public class RateLimiterAspect {
     @Autowired
     private KafkaProducer kafkaProducer;
 
-    public RateLimiterAspect(RateLimitService rateLimiterService, HttpServletRequest request, Environment environment) {
+    public RateLimitAspect(RateLimitService rateLimiterService, HttpServletRequest request, Environment environment) {
         this.rateLimiterService = rateLimiterService;
         this.request = request;
        // this.env = environment;
@@ -62,7 +62,7 @@ public class RateLimiterAspect {
 
         switch (keyType.toUpperCase()) {
             case "IP":
-                identifier = request.getRemoteUser();
+                identifier = request.getHeader("X-IP");
                 break;
 
             case "CLIENT":

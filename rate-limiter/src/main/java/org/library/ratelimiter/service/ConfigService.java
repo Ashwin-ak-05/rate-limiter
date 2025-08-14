@@ -25,6 +25,10 @@ public class ConfigService {
     }
 
     public String getStrategy(String api){
-        return environment.getProperty("ratelimiter.apis." + api + ".strategy","/testapi");
+        return environment.getProperty("ratelimiter.apis." + api + ".strategy","FIXED_BUCKET");
+    }
+
+    public int getBurstLimit(String api){
+        return Integer.parseInt(environment.getProperty("ratelimiter.apis." + api + ".burstlimit","0"));
     }
 }

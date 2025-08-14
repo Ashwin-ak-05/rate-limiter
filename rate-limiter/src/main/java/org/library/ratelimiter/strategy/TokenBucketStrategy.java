@@ -1,5 +1,6 @@
 package org.library.ratelimiter.strategy;
 
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -20,7 +21,8 @@ public class TokenBucketStrategy implements RateLimitStrategy{
 
 
     @Override
-    public boolean allowRequest(String keyBase, int limit, Duration duration) {
+    //@CircuitBreaker(name = "testCircuitBreaker", fallbackMethod = "allowAllFallback")
+    public boolean allowRequest(String keyBase, int limit, int burstLimit ,Duration duration) {
         long now = System.currentTimeMillis();
         String tokensKey = keyBase + ":tokens";
         String timestampKey = keyBase + ":timestamp";
@@ -56,5 +58,10 @@ public class TokenBucketStrategy implements RateLimitStrategy{
 
 
 
+    }
+
+    public boolean allowAllFallback(String strategyName, String identifier, String apiPath, String apiKey, Throwable t){
+
+        return true;
     }
 }
