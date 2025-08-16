@@ -20,24 +20,30 @@ public class FixedWindowStrategy implements RateLimitStrategy {
     }
 
     @Override
-    //@CircuitBreaker(name = "testCircuitBreaker", fallbackMethod = "allowAllFallback")
-    public boolean allowRequest(String keyBase, int limit,int burstLimit, Duration duration) {
+    @CircuitBreaker(name = "sampleService", fallbackMethod = "allowAllFallback")
+    public boolean allowRequest(String keyBase, int limit, int burstLimit, Duration duration) {
 
-        String redisKey = keyBase + ":fixedWindow";
-        Long count = redisTemplate.opsForValue().increment(keyBase);
+        try {
+            String redisKey = keyBase + ":fixedWindow";
+            Long count = redisTemplate.opsForValue().increment(keyBase);
 
-        if (count == 1) {
-            redisTemplate.expire(keyBase, duration.toMillis(), TimeUnit.MILLISECONDS);
+            if (count == 1) {
+                redisTemplate.expire(keyBase, duration.toMillis(), TimeUnit.MILLISECONDS);
+            }
+
+            boolean allowed = count <= limit + burstLimit;
+            log.debug("FixedWindow | Key: {} | Count: {} | Limit: {} | Allowed: {}", redisKey, count, limit, allowed);
+
+            return allowed;
+        } catch (Exception e) {
+            throw new RuntimeException();
         }
 
-        boolean allowed = count <= limit + burstLimit;
-        log.debug("FixedWindow | Key: {} | Count: {} | Limit: {} | Allowed: {}", redisKey, count, limit, allowed);
 
-        return allowed;
     }
 
     @Override
-    public boolean allowAllFallback(String strategyName, String identifier, String apiPath, String apiKey, Throwable t) {
+    public boolean allowAllFallback(String keyBase, int limit, int burstLimit, Duration duration, Throwable t) {
         return true;
     }
 

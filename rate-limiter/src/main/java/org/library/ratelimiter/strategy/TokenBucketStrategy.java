@@ -60,7 +60,7 @@ public class TokenBucketStrategy implements RateLimitStrategy{
 
     }
 
-    public boolean allowAllFallback(String strategyName, String identifier, String apiPath, String apiKey, Throwable t){
+    public boolean allowAllFallback(String key, int limit,int burstLimit, Duration duration, Throwable t){
 
         return true;
     }
