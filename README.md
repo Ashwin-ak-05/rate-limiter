@@ -99,7 +99,15 @@ A testing script is deployed on **GitHub Pages**:
 ### Kafka for Throttle Events
 - **Kafka** is used to consume throttle events.
 - Install **Zookeeper** and **Kafka** using the `docker-compose` file in the `events` folder.
-- ---
+- Create the kafka Topic
+  ```bash
+  kafka-topics.sh --create \
+  --topic ratelimiter-logs \
+  --bootstrap-server localhost:9092 \
+  --partitions 1 \
+  --replication-factor 1
+  ```
+---
 ## How to Run
 
 1. Start the **Config Server**.  
