@@ -95,6 +95,12 @@ A testing script is deployed on **GitHub Pages**:
 - **Prometheus** is integrated for monitoring.
 - To run Prometheus, use the `docker-compose` file in the `observability` folder.
 - Prometheus runs on port `9090`.
+- Metrics
+  ```bash
+  ratelimiter_requests_total
+  ratelimiter_requests_allowed
+  ratelimiter_requests_throttled
+  ```
 
 ### Kafka for Throttle Events
 - **Kafka** is used to consume throttle events.
